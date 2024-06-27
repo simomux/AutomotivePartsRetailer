@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Details of {{ object.pk }} {% endblock %}
+
+{% block head %}
+    <style>
+        #image{
+            width: auto;
+            height: auto;
+            max-width: 400px;
+            max-height: 400px;
+            object-fit: contain;
+        }
+        #container{
+            padding: 15px;
+        }
+        #internal-container{
+            display: flex;
+            background-color: #d7d7d7;
+            padding: 10px;
+            border: 2px solid #d3d3d3;
+            border-radius: 15px;
+        }
+        #content{
+            padding-left: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="container">
+        <div id="internal-container">
+            <img id="image" src="{% static object.image %}" alt="Item image">
+            <div id="content">
+                <h5><b>{{ object.name }}</b></h5>
+                <p>Description: {{ object.description }}</p>
+                <h6><b>Category: {{ object.category.name }}</b></h6>
+
+                {% if object.category.name != "Tool" %}
+                    {% if object.model is null %}
+                        <h6><b>Maker: Universal</b></h6>
+                    {% else %}
+                        <h6><b>Maker: {{ object.model.maker.name }}</b></h6>
+                        <h6><b>Model: {{ object.model.name }}</b></h6>
+                    {% endif %}
+                {% else %}
+                    </br>
+                    </br>
+                {% endif %}
+
+                {% if not object.is_discount %}
+                    <h4>{{ object.price }} €</h4>
+                {% else %}
+                    <h4><s>Old price: {{ object.price }} €</s></h4>
+                    <h4 class="text-danger">Discounted price: {{ object.discount_price }} €</h4>
+                {% endif %}
+
+                <p>Currently {{ object.stock }} in stock</p>
+
+                <div id="buy_item">
+                    <form method="post">
+                    <label>Amount:</label>
+                    <input type="number" max="{{ object.stock }}">
+                    <input type="submit" class="Primary" value="BUY"></input>
+                    {% if not user.is_authenticated %}
+                        <h5 class="text-danger">You must log in before buying!</h5>
+                    {% elif user.is_staff %}
+                        <h5 class="text-danger">Staff members can't buy items!</h5>
+                    {% else %}
+                    {% endif %}
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -31,6 +31,14 @@ body {
     gap: 10px;
 }
 
+.navbar-image{
+    width: auto;
+    height: auto;
+    max-width: 200px;
+    max-height: 150px;
+    object-fit: contain;
+}
+
 .nav-button {
     background-color: #3e50ab;
     color: white;
