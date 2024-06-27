@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Products homepage {% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Welcome to our shop</h1>
+        <p>Items list:</p>
+        {% for item in object_list %}
+            <div class="surround-card">
+                <div class="card-body">
+                    <img class="card-img" src="{% static item.image %}" onerror="this.onerror=null; this.src='{% static 'imgs/placeholder.jpg' %}'" alt="ERROR">
+                    <div class="card-text">
+                        <a class="card-title" href="">{{ item.name }}</a>
+                        <p>{{ item.description }}</p>
+                        {% if item.is_discount %}
+                            <h4><s>{{ item.price }}€</s></h4>
+                            <h4 class="discount-price">Discount price: {{ item.discount_price }}</h4>
+                        {% else %}
+                            <h4>{{ item.price }}€</h4>
+                        {% endif %}
+                        <p>Currently {{ item.stock }} in stock</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

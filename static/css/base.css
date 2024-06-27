@@ -1,0 +1,44 @@
+body {
+    margin: 0;
+    font-family: "Market Sans", Arial, sans-serif;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #161c3b;
+    color: #fff;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: flex-start;
+
+}
+
+.navbar-center {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.navbar-center h1 {
+    margin: 0;
+}
+
+.navbar-right {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-button {
+    background-color: #3e50ab;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.nav-button:hover {
+    background-color: #6f81de;
+}

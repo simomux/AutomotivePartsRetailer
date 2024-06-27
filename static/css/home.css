@@ -1,0 +1,33 @@
+.surround-card{
+    padding: 5px;
+}
+
+.card-body{
+    display: flex;
+    background-color: #d7d7d7;
+    padding: 10px;
+    border: 2px solid #d3d3d3;
+    border-radius: 15px;
+}
+
+.card-img{
+    width: auto;
+    height: auto;
+    max-width: 250px;
+    max-height: 250px;
+    object-fit: contain;
+}
+
+.card-text{
+    padding: 10px;
+}
+
+.card-title{
+    font-size: larger;
+    color: #3e50ab;
+    font-weight: bold;
+}
+
+.discount-price{
+    color: darkred;
+}

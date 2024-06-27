@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="{% static 'imgs/icon.png'%}">
+
+    {% block head %} {% endblock %}
+
+    <title> {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="{% static 'imgs/logo.png' %}" alt="Car Retailer Logo">
+        </div>
+        <div class="navbar-center">
+            <h1>Car Parts Retailer</h1>
+        </div>
+        <div class="navbar-right">
+            <a href="/" class="nav-button">Home</a>
+            <a href="" class="nav-button">Login</a>
+        </div>
+    </nav>
+    {% block content %}
+
+    {% endblock %}
+</body>
+</html>
