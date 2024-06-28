@@ -53,6 +53,7 @@ def init_db():
     with open("static/data/products.csv") as products:
         csv_reader = reader(products, delimiter=',')
         for i in csv_reader:
+            print(i)
             name = i[0].strip()
             description = i[1].strip()
             price = i[2].strip()
@@ -66,7 +67,7 @@ def init_db():
                 except CarModel.DoesNotExist:
                     model = None
 
-            if "True" in i:
+            if i[-2].strip() == "True":
                 discount_price = i[-1].strip()
                 product = Product(name=name, description=description, price=price, stock=stock, category=category, model=model, image=image, is_discount=True, discount_price=discount_price)
             else:

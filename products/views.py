@@ -10,6 +10,19 @@ class HomePageView(ListView):
     template_name = 'products/home.html'
     model = Product
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['products'] = Product.objects.all().order_by('?')[:4]
+
+        context['discounted_products'] = Product.objects.filter(is_discount=True).order_by('?')[:4]
+
+        context['most_sold'] = Product.objects.exclude(amount_bought=0).order_by('-amount_bought')[:4]
+
+        return context
+
+
+
 
 class DetailProductView(DetailView):
     model = Product
@@ -36,22 +49,23 @@ class SearchResultsView(ListView):
 
     def get_queryset(self):
         search_string = self.request.resolver_match.kwargs.get('searchstring')
-        print("String: " + search_string)
         search_category = self.request.resolver_match.kwargs.get('category')
-        print("Category: " + search_category)
         if search_category == "None":
             search_category = None
         search_maker = self.request.resolver_match.kwargs.get('maker')
-        print("Maker: " + search_maker)
         if search_maker == "None":
             search_maker = None
 
-        # Get Category and CarModel instances based on search parameters
+        maker_instance = model_instance = None
         category_instance = Category.objects.get(name=search_category) if search_category else None
-        maker_instance = CarMaker.objects.get(name=search_maker) if search_maker else None
-        model_instance = CarModel.objects.filter(maker=maker_instance)
+        try:
+            if search_maker != "Universal":
+                maker_instance = CarMaker.objects.get(name=search_maker) if search_maker else None
+                model_instance = CarModel.objects.filter(maker=maker_instance)
+        except (CarMaker.DoesNotExist, CarModel.DoesNotExist, Category.DoesNotExist):
+            pass
 
-        # Filter products based on search_string, category_instance, and maker_instance
+        # Filter products based on search_string, category_instance, and model_instance
         queryset = Product.objects.all()
 
         if search_string:

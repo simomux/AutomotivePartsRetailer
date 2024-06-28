@@ -2,6 +2,8 @@ Giulia,Alfa Romeo
 Stelvio,Alfa Romeo
 DB11,Aston Martin
 Vantage,Aston Martin
+A1,Audi
+A3,Audi
 A4,Audi
 Q5,Audi
 R8,Audi
@@ -117,7 +119,6 @@ Sierra,GMC
 1500,RAM
 2500,RAM
 3500,RAM
-Silverado,Chevrolet
 Wrangler,Jeep
 Cherokee,Jeep
 Grand Cherokee,Jeep

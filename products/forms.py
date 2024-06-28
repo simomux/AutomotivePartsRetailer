@@ -20,6 +20,7 @@ class SearchForm(forms.Form):
         category_names = [(category.name, category.name) for category in category_list]
         category_names.sort()
         category_names.append(("None", '--'))
+
         self.fields['search_category'].choices = category_names
         self.fields['search_category'].initial = category_names[-1]
 
@@ -27,8 +28,9 @@ class SearchForm(forms.Form):
         maker_names = [(maker.name, maker.name) for maker in maker_list]
         maker_names.sort()
         maker_names.append(("None", '--'))
+        maker_names.append(("Universal", 'Universal'))
         self.fields['search_maker'].choices = maker_names
-        self.fields['search_maker'].initial = maker_names[-1]
+        self.fields['search_maker'].initial = maker_names[-2]
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -47,3 +49,4 @@ class SearchForm(forms.Form):
             self.add_error('search_maker', "You can only select '--' for Maker when searching in the 'Tool' category.")
 
         return cleaned_data
+
