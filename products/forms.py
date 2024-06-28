@@ -8,7 +8,7 @@ from crispy_forms.layout import Layout, Field, Submit
 
 class SearchForm(forms.Form):
     # Initialize the form fields
-    search_string = forms.CharField(label='Search string: ', max_length=100, min_length=3)
+    search_string = forms.CharField(label='Search string: ', max_length=100, min_length=3, required=False)
     search_category = forms.ChoiceField(label='Category: ', required=False)
     search_maker = forms.ChoiceField(label='Maker: ', required=False)
 

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} {{ page_title }} products {% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <style>
+        #title {
+            padding: 10px;
+            text-align: center; /* Center align the title */
+        }
+
+        .page-button {
+            font-size: large;
+            font-weight: bold;
+            color: #161c3b;
+            margin: 0 5px; /* Add margin to separate buttons */
+        }
+
+        .current {
+            font-size: large;
+            color: white;
+            margin: 0 10px; /* Adjust margin as needed */
+        }
+
+        .links {
+            display: inline-flex; /* Use inline-flex for inline behavior */
+            align-items: center;
+            border: 3px solid #3e50ab;
+            border-radius: 10px;
+            background: #6f81de;
+        }
+
+        .pagination {
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center horizontally */
+            align-items: center;
+            padding: 10px; /* Add padding to .pagination if needed */
+            margin-top: 20px; /* Example margin to push it down from the top */
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div id="title-container">
+            <h2 id="title">List of {{ page_subtitle }} products:</h2>
+        </div>
+        {% for item in page_obj %}
+            <div class="surround-card">
+                <div class="card-body">
+                    <img class="card-img" src="{% static item.image %}" onerror="this.onerror=null; this.src='{% static 'imgs/placeholder.jpg' %}'" alt="ERROR">
+                    <div class="card-text">
+                        <a class="card-title" href="{% url 'detail' item.pk %}">{{ item.name }}</a>
+                        <p>{{ item.description }}</p>
+                        {% if item.is_discount %}
+                            <h4><s>Old price: {{ item.price }}€</s></h4>
+                            <h4 class="text-danger">Discounted price: {{ item.discount_price }} €</h4>
+                        {% else %}
+                            <h4>Price: {{ item.price }} €</h4>
+                        {% endif %}
+                        <p>Currently {{ item.stock }} in stock</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="pagination">
+            <div class="links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="page-button">&#8678; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="page-button">prev</a>
+                {% endif %}
+                <p class="current">Page {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</p>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="page-button">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="page-button">last &#8680;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

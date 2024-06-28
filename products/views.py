@@ -13,15 +13,15 @@ class HomePageView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        # Preview list of all items
         context['products'] = Product.objects.all().order_by('?')[:4]
 
+        # Preview list of discounted items
         context['discounted_products'] = Product.objects.filter(is_discount=True).order_by('?')[:4]
 
+        # Preview list of most sold items (items must have been sold at least 1 time)
         context['most_sold'] = Product.objects.exclude(amount_bought=0).order_by('-amount_bought')[:4]
-
         return context
-
-
 
 
 class DetailProductView(DetailView):
@@ -36,7 +36,9 @@ def searchPage(request):
             searchstring = form.cleaned_data['search_string']
             category = form.cleaned_data['search_category']
             maker = form.cleaned_data['search_maker']
-            return redirect('search_results',  category, maker, searchstring)
+            if searchstring == "":
+                searchstring = "None"
+            return redirect('search_results', category, maker, searchstring)
     else:
         form = SearchForm()
 
@@ -45,10 +47,13 @@ def searchPage(request):
 
 class SearchResultsView(ListView):
     model = Product
-    template_name = 'products/search_results.html'
+    template_name = 'products/products_list.html'
+    paginate_by = 5
 
     def get_queryset(self):
         search_string = self.request.resolver_match.kwargs.get('searchstring')
+        if search_string == "None":
+            search_string = None
         search_category = self.request.resolver_match.kwargs.get('category')
         if search_category == "None":
             search_category = None
@@ -77,4 +82,38 @@ class SearchResultsView(ListView):
         if maker_instance:
             queryset = queryset.filter(model__in=model_instance)
 
+        if search_maker == "Universal":
+            queryset = queryset.exclude(category=Category.objects.get(name="Tool"))
+            queryset = queryset.filter(model=None)
+
         return queryset
+
+
+class ProductListView(ListView):
+    model = Product
+    paginate_by = 5
+    template_name = 'products/products_list.html'
+    page_title = ""
+    page_subtitle = ""
+
+    def get_queryset(self):
+        list_type = self.request.GET.get('type')
+
+        if list_type == 'discounted':
+            self.page_title = 'Discounted'
+            self.page_subtitle = 'all discounted'
+            return Product.objects.filter(is_discount=True).order_by('?')
+        elif list_type == 'mostsold':
+            self.page_title = 'Most sold'
+            self.page_subtitle = 'most sold'
+            return Product.objects.exclude(amount_bought=0).order_by('-amount_bought')
+        else:
+            self.page_title = 'All'
+            self.page_subtitle = 'all'
+            return Product.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = self.page_title
+        context['page_subtitle'] = self.page_subtitle
+        return context

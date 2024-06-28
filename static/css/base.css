@@ -9,12 +9,12 @@ body {
     align-items: center;
     background-color: #161c3b;
     color: #fff;
+    padding: 10px;
 }
 
 .navbar-left {
     display: flex;
-    align-items: flex-start;
-
+    align-items: center;
 }
 
 .navbar-center {
@@ -31,7 +31,7 @@ body {
     gap: 10px;
 }
 
-.navbar-image{
+.navbar-image {
     width: auto;
     height: auto;
     max-width: 200px;

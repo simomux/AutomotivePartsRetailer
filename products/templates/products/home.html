@@ -12,7 +12,7 @@
         <div id="title-container">
             <h1 id="title">Welcome to our shop</h1>
         </div>
-        <a href="" class="subtitle">Browse complete list:</a>
+        <a href="{% url 'product_list' %}?type=all" class="subtitle"><u>Browse complete list:</u></a>
         {% for item in products %}
             <div class="surround-card">
                 <div class="card-body">
@@ -33,7 +33,7 @@
         {% endfor %}
         </br>
         </br>
-        <a href="" class="subtitle">Discounted items that we recommend:</a>
+        <a href="{% url 'product_discounted' %}?type=discounted" class="subtitle"><u>Discounted items that we recommend:</u></a>
         {% for item in discounted_products %}
             <div class="surround-card">
                 <div class="card-body">
@@ -54,7 +54,7 @@
         {% endfor %}
         </br>
         </br>
-        <a href="" class="subtitle">Most sold items that we recommend:</a>
+        <a href="{% url 'product_mostsold' %}?type=mostsold" class="subtitle"><u>Most sold items that we recommend:</u></a>
         {% for item in most_sold %}
             <div class="surround-card">
                 <div class="card-body">

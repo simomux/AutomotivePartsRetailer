@@ -53,7 +53,6 @@ def init_db():
     with open("static/data/products.csv") as products:
         csv_reader = reader(products, delimiter=',')
         for i in csv_reader:
-            print(i)
             name = i[0].strip()
             description = i[1].strip()
             price = i[2].strip()
