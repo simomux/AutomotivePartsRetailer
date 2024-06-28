@@ -53,11 +53,23 @@ def init_db():
     with open("static/data/products.csv") as products:
         csv_reader = reader(products, delimiter=',')
         for i in csv_reader:
+            name = i[0].strip()
+            description = i[1].strip()
+            price = i[2].strip()
+            stock = i[3].strip()
             category = Category.objects.get(name=i[4].strip())
             image = os.path.join("imgs/", i[0].replace(" ", "_")+".webp")
-            if len(i) > 5:
-                model = CarModel.objects.get(name=i[5].strip())
-                product = Product(name=i[0].strip(), description=i[1].strip(), price=i[2].strip(), stock=i[3].strip(), category=category, model=model, image=image)
+
+            if category != "Tool":
+                try:
+                    model = CarModel.objects.get(name=i[5].strip())
+                except CarModel.DoesNotExist:
+                    model = None
+
+            if "True" in i:
+                discount_price = i[-1].strip()
+                product = Product(name=name, description=description, price=price, stock=stock, category=category, model=model, image=image, is_discount=True, discount_price=discount_price)
             else:
-                product = Product(name=i[0].strip(), description=i[1].strip(), price=i[2].strip(), stock=i[3].strip(), category=category, image=image)
+                product = Product(name=name, description=description, price=price, stock=stock, category=category, model=model, image=image)
+
             product.save()
