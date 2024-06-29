@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} {{ page_title }} products {% endblock %}
+{% block title %} {{ page_title }} {% endblock %}
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
@@ -16,6 +16,9 @@
             font-weight: bold;
             color: #161c3b;
             margin: 0 5px; /* Add margin to separate buttons */
+        }
+        .page-button:hover {
+            color: #d7d7d7;
         }
 
         .current {
@@ -46,7 +49,7 @@
 {% block content %}
     <div class="container">
         <div id="title-container">
-            <h2 id="title">List of {{ page_subtitle }} products:</h2>
+            <h2 id="title">{{ page_title }}:</h2>
         </div>
         {% for item in page_obj %}
             <div class="surround-card">
@@ -69,13 +72,13 @@
         <div class="pagination">
             <div class="links">
                 {% if page_obj.has_previous %}
-                    <a href="?page=1" class="page-button">&#8678; first</a>
-                    <a href="?page={{ page_obj.previous_page_number }}" class="page-button">prev</a>
+                    <a href="?type={{ list_type }}&page=1" class="page-button">&#8678; first</a>
+                    <a href="?type={{ list_type }}&page={{ page_obj.previous_page_number }}" class="page-button">prev</a>
                 {% endif %}
                 <p class="current">Page {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</p>
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}" class="page-button">next</a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}" class="page-button">last &#8680;</a>
+                    <a href="?type={{ list_type }}&page={{ page_obj.next_page_number }}" class="page-button">next</a>
+                    <a href="?type={{ list_type }}&page={{ page_obj.paginator.num_pages }}" class="page-button">last &#8680;</a>
                 {% endif %}
             </div>
         </div>

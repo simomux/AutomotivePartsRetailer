@@ -49,6 +49,7 @@ class SearchResultsView(ListView):
     model = Product
     template_name = 'products/products_list.html'
     paginate_by = 5
+    page_title = "Search results"
 
     def get_queryset(self):
         search_string = self.request.resolver_match.kwargs.get('searchstring')
@@ -88,32 +89,35 @@ class SearchResultsView(ListView):
 
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = self.page_title
+        context['list_type'] = "search"
+        return context
+
 
 class ProductListView(ListView):
     model = Product
     paginate_by = 5
     template_name = 'products/products_list.html'
     page_title = ""
-    page_subtitle = ""
+    list_type = ""
 
     def get_queryset(self):
-        list_type = self.request.GET.get('type')
-
-        if list_type == 'discounted':
-            self.page_title = 'Discounted'
-            self.page_subtitle = 'all discounted'
+        self.list_type = self.request.GET.get('type')
+        if self.list_type == 'discounted':
+            self.page_title = 'List of all discounted products'
             return Product.objects.filter(is_discount=True).order_by('?')
-        elif list_type == 'mostsold':
-            self.page_title = 'Most sold'
-            self.page_subtitle = 'most sold'
+        elif self.list_type == 'mostsold':
+            self.page_title = 'List of most sold products'
             return Product.objects.exclude(amount_bought=0).order_by('-amount_bought')
         else:
-            self.page_title = 'All'
-            self.page_subtitle = 'all'
+            self.page_title = 'List of all products'
             return Product.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_title'] = self.page_title
-        context['page_subtitle'] = self.page_subtitle
+        context['list_type'] = self.list_type
+
         return context
