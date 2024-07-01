@@ -1,9 +1,8 @@
 from django import forms
-from django.shortcuts import get_object_or_404
 from .models import Category, CarMaker
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit
+from crispy_forms.layout import Layout, Field
 
 
 class SearchForm(forms.Form):

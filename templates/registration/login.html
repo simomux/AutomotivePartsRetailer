@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %} Login {% endblock %}
+
+{% block head %}
+    <style>
+        #container{
+            padding: 20px;
+        }
+        #login_container{
+            border: 2px solid darkslategray;
+            background: #d7d7d7;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        label{
+            font-size: large;
+            color: #3e50ab;
+            font-weight: bold;
+        }
+        #button_container{
+            text-align: center;
+        }
+        #login_button{
+            background-color: #3e50ab;
+            color: white;
+            border-radius: 5px;
+            height: 40px;
+            width: 150px;
+            border: 2px solid #161c3b;
+        }
+        #login_button:hover {
+            background-color: #6f81de;
+        }
+        #register_container{
+            display: flex;
+            flex-direction: column; /* Change to column for vertical alignment */
+            align-items: center; /* Center horizontally */
+            padding-top: 40px;
+            text-align: center; /* Center text inside the container */
+        }
+        #register{
+            background-color: #3e50ab;
+            color: white;
+            border-radius: 5px;
+            border: 2px solid #161c3b;
+            padding: 6px 44px;
+            text-decoration: none;
+        }
+        #register:hover{
+            background-color: #6f81de;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="container">
+        <div id="login_container">
+            <form method="post" action="{% url 'login' %}"> {% csrf_token %}
+            {{ form|crispy }}
+            <div id="button_container">
+                <input type="submit" value="Login" id="login_button">
+            </div>
+        </form>
+        </div>
+        <div id="register_container">
+            <h4>If you aren't registered you can do it here: </h4>
+            <a href="{% url 'register' %}" id="register">Register</a>
+        </div>
+    </div>
+
+{% endblock %}

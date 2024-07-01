@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %} Logout {% endblock %}
+
+{% block head %}
+    <style>
+        #container{
+            text-align: center;
+            padding: 40px;
+        }
+        h2{
+            color: #161c3b;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="container">
+        <h2>You have successfully logged out!</h2>
+        <h4>It's sad to see you go.</h4>
+    </div>
+{% endblock %}

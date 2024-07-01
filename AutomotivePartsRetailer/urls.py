@@ -21,6 +21,7 @@ from .initcmds import init_db, erase_db
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('products.urls')),
+    path('accounts/', include('users.urls')),
 ]
 
 erase_db()

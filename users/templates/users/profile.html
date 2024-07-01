@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Profile {% endblock %}
+
+{% block head %}
+    <style>
+        #container{
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="container">
+        <h1>Welcome {{ user.username }}</h1>
+        {% if object_list.count > 0 %}
+            <h2>List of orders:</h2>
+        {% else %}
+            <h2>You have no orders!</h2>
+        {% endif %}
+    </div>
+{% endblock %}

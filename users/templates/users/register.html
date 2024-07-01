@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %} Register {% endblock %}
+
+{% block head %}
+    <style>
+        #container{
+            padding: 15px;
+        }
+        #form-container{
+            border: 2px solid darkslategray;
+            background: #d7d7d7;
+            border-radius: 15px;
+            padding: 10px;
+        }
+        li{
+            color: black;
+        }
+        small{
+            color: black;
+        }
+        label{
+            font-size: large;
+            color: #3e50ab;
+            font-weight: bold;
+        }
+        #button_container{
+            text-align: center;
+            padding-bottom: 15px;
+        }
+        #register_button{
+            background-color: #3e50ab;
+            color: white;
+            border-radius: 5px;
+            height: 40px;
+            width: 150px;
+            border: 2px solid #161c3b;
+        }
+        #hint_id_username{
+            color: black !important;
+        }
+        #hint_id_password2{
+            color: black !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="container">
+        <div id="form-container">
+            <form method="post" action="{% url 'register' %}"> {% csrf_token %}
+                {{ form|crispy }}
+                <div id="button_container">
+                    <input type="submit" value="Register" id="register_button">
+                </div>
+        </form>
+        </div>
+    </div>
+{% endblock %}
