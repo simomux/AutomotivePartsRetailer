@@ -6,17 +6,73 @@
     <style>
         #container{
             text-align: center;
+            padding: 15px;
+        }
+        #profile_container{
+            background: #d7d7d7;
+            border: 2px solid darkslategray;
+            border-radius: 15px;
+            padding: 10px;
+        }
+        #profile_actions{
+            padding: 15px;
+        }
+        #action_buttons{
+            padding: 15px;
+        }
+        #title{
+            color: #161c3b;
+            font-weight: bold;
+        }
+        .action{
+            background-color: #3e50ab;
+            color: white;
+            padding: 10px 15px;
+            cursor: pointer;
+            border: 2px solid #6f81de;
+            border-radius: 15px;
+        }
+        .action:hover{
+            background-color: #6f81de;
+            border: 2px solid #3e50ab;
+            color: white;
+            text-decoration: none;
+        }
+        #infos{
+            text-align: left;
         }
     </style>
 {% endblock %}
 
 {% block content %}
     <div id="container">
-        <h1>Welcome {{ user.username }}</h1>
-        {% if object_list.count > 0 %}
-            <h2>List of orders:</h2>
-        {% else %}
-            <h2>You have no orders!</h2>
-        {% endif %}
+        <div id="profile_container">
+            <h3 id="title">{{ user.username }} profile:</h3>
+            <div id="infos">
+                <p>Username: {{ user.username }}</p>
+                <p>Email: {{ user.email }}</p>
+                {% if user.is_staff %}
+                    <p>Staff member</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="profile_actions">
+            <h3 id="title">Options:</h3>
+            <div id="action_buttons">
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'staff_list' 'country' %}" class="action">Country management</a>
+                        <a href="{% url 'staff_list' 'maker' %}" class="action">Maker management</a>
+                        <a href="{% url 'staff_list' 'model' %}" class="action">Model management</a>
+                        <a href="{% url 'staff_list' 'product' %}" class="action">Product management</a>
+                        <a href="" class="action">Current orders</a>
+                    {% else %}
+                        <a href="" class="action">View orders</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
     </div>
 {% endblock %}

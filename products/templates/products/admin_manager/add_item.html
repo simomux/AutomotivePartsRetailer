@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+
+{% block title %} {{ action }} new {{ type }} {% endblock %}
+
+{% block head %}
+    <style>
+        #container{
+            padding: 10px;
+        }
+        #add_form{
+            padding: 10px;
+            border: 2px solid darkslategray;
+            background: #d7d7d7;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .btn_container{
+            padding: 10px;
+        }
+        h2{
+            font-weight: bold;
+        }
+        label{
+            font-size: large;
+            color: #3e50ab;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+
+
+{% block content %}
+    <div id="container">
+        <div id="add_form">
+            <h2>{{ action }} {{ type }}</h2>
+
+            <form method="post"> {% csrf_token %}
+                {% crispy form %}
+            </form>
+            <div class="btn_container">
+                <a href="{% url 'profile' %}" class="nav-button">Cancel</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

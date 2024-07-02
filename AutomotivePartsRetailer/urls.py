@@ -24,5 +24,5 @@ urlpatterns = [
     path('accounts/', include('users.urls')),
 ]
 
-erase_db()
-init_db()
+# erase_db()
+# init_db()

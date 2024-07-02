@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %} List of {{ list_type }} {% endblock %}
+
+{% block head %}
+    <style>
+        #container {
+            padding: 15px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #table_container {
+            width: 100%;
+            max-width: 800px;
+            padding: 10px;
+            border: 2px solid darkslategray;
+            background: #d7d7d7;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .item_container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .item_text {
+            text-align: left;
+            margin-right: auto;
+        }
+        .button_container {
+            display: flex;
+            gap: 10px;
+        }
+        .query_button {
+            background-color: #3e50ab;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            border: 2px solid #6f81de;
+            border-radius: 10px;
+            text-decoration: none;
+        }
+        .query_button:hover {
+            background-color: #6f81de;
+            border: 2px solid #3e50ab;
+            color: white;
+            text-decoration: none;
+        }
+        .page-button {
+            font-size: large;
+            font-weight: bold;
+            color: #161c3b;
+            margin: 0 5px;
+        }
+        .page-button:hover {
+            color: #d7d7d7;
+        }
+        .current {
+            font-size: large;
+            color: white;
+            margin: 0 10px;
+        }
+        .links {
+            display: inline-flex;
+            align-items: center;
+            border: 3px solid #3e50ab;
+            border-radius: 10px;
+            background: #6f81de;
+            padding: 5px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            width: 100%;
+        }
+        #add_button{
+            padding: 10px;
+        }
+        h2{
+            font-weight: bold;
+            color: #161c3b;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div id="container">
+    <div id="table_container">
+        <h2>List of {{ list_type }}</h2>
+        {% for element in page_obj %}
+        <div class="item_container">
+            <div class="item_text">{{ element.name }}</div>
+            <div class="button_container">
+                {% if list_type != "country" and list_type != "maker" %}
+                    {% if list_type == 'model' %}
+                        <a href="{% url 'modify_model' element.id %}" class="query_button">Modify model</a>
+                    {% elif list_type == 'product' %}
+                        <a href="{% url 'modify_product' element.id %}" class="query_button">Modify product</a>
+                    {% endif %}
+                {% endif %}
+                {% if list_type == 'country' %}
+                    <a href="{% url 'remove_country' element.id %}" class="query_button">Remove country</a>
+                {% elif list_type == 'maker' %}
+                    <a href="{% url 'remove_maker' element.id %}" class="query_button">Remove maker</a>
+                {% elif list_type == 'model' %}
+                    <a href="{% url 'remove_model' element.id %}" class="query_button">Remove model</a>
+                {% elif list_type == 'product' %}
+                    <a href="{% url 'remove_product' element.id %}" class="query_button">Remove product</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div id="add_button">
+        {% if list_type == 'country' %}
+            <a href="{% url 'add_country' %}" class="query_button" id="add_button">Add a country</a>
+        {% elif list_type == 'maker' %}
+            <a href="{% url 'add_maker' %}" class="query_button" id="add_button">Add a maker</a>
+        {% elif list_type == 'model' %}
+            <a href="{% url 'add_model' %}" class="query_button" id="add_button">Add a model</a>
+        {% elif list_type == 'product' %}
+            <a href="{% url 'add_product' %}" class="query_button" id="add_button">Add a product</a>
+        {% endif %}
+
+    </div>
+    <div class="pagination">
+        <div class="links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="page-button">&#8678; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-button">prev</a>
+            {% endif %}
+                <p class="current">Page {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</p>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="page-button">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="page-button">last &#8680;</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

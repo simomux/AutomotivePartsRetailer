@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %} Remove {{ type }} {% endblock %}
+
+{% block head %}
+    <style>
+        #container{
+            padding: 10px;
+        }
+        #delete_form{
+            padding: 10px;
+            border: 2px solid darkslategray;
+            background: #d7d7d7;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .btn_container{
+            padding: 10px;
+        }
+        h2{
+            font-weight: bold;
+        }
+        label{
+            font-size: large;
+            color: #3e50ab;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+    <div id="container">
+        <div id="delete_form">
+            <h2>Delete {{ type }}</h2>
+            <p>Are you sure you want to delete "{{ object.name }}"?</p>
+
+            <form method="post"> {% csrf_token %}
+                <div class="btn_container">
+                    <button type="submit" class="nav-button">Confirm</button>
+                </div>
+            </form>
+            <div class="btn_container">
+                <a href="{% url 'profile' %}" class="nav-button">Cancel</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

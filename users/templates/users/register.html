@@ -48,13 +48,15 @@
 
 {% block content %}
     <div id="container">
-        <div id="form-container">
-            <form method="post" action="{% url 'register' %}"> {% csrf_token %}
-                {{ form|crispy }}
-                <div id="button_container">
-                    <input type="submit" value="Register" id="register_button">
-                </div>
-        </form>
-        </div>
+        {% if not user.is_authenticated %}
+            <div id="form-container">
+                <form method="post" action="{% url 'register' %}"> {% csrf_token %}
+                    {{ form|crispy }}
+                    <div id="button_container">
+                        <input type="submit" value="Register" id="register_button">
+                    </div>
+            </form>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

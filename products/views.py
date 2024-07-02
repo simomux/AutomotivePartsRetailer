@@ -1,9 +1,12 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseNotAllowed
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from .models import *
-from .forms import SearchForm
+from .forms import *
 
 
 class HomePageView(ListView):
@@ -118,6 +121,216 @@ class ProductListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_title'] = self.page_title
+        context['list_type'] = self.list_type
+
+        return context
+
+
+# Products management views
+class StaffUserMixin:
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_authenticated and request.user.is_staff):
+            # return redirect("home")
+            return HttpResponseNotAllowed(['GET', 'POST'])
+        return super().dispatch(request, *args, **kwargs)
+
+
+class RemoveCountry(StaffUserMixin, DeleteView):
+    model = Country
+    template_name = "products/admin_manager/remove_item.html"
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'country'})
+    type = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "country"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        return context
+
+
+class RemoveProduct(StaffUserMixin, DeleteView):
+    model = Product
+    template_name = "products/admin_manager/remove_item.html"
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'product'})
+    type = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "product"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        return context
+
+
+class RemoveMaker(StaffUserMixin, DeleteView):
+    model = CarMaker
+    template_name = "products/admin_manager/remove_item.html"
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'maker'})
+    type = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "maker"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        return context
+
+
+class RemoveModel(StaffUserMixin, DeleteView):
+    model = CarModel
+    template_name = "products/admin_manager/remove_item.html"
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'model'})
+    type = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "model"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        return context
+
+
+class AddCountry(StaffUserMixin, CreateView):
+    template_name = "products/admin_manager/add_item.html"
+    form_class = CreateCountryForm
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'country'})
+    type = ""
+    action = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "country"
+        self.action = "Create"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        context['action'] = self.action
+        context['form'] = self.form_class(self.request.POST or None)
+        return context
+
+
+class AddProduct(StaffUserMixin, CreateView):
+    template_name = "products/admin_manager/add_item.html"
+    form_class = CreateProductForm
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'product'})
+    type = ""
+    action = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "product"
+        self.action = "Create"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        context['action'] = self.action
+        context['form'] = self.form_class(self.request.POST or None)
+        return context
+
+
+class AddMaker(StaffUserMixin, CreateView):
+    template_name = "products/admin_manager/add_item.html"
+    form_class = CreateMakerForm
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'maker'})
+    type = ""
+    action = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "maker"
+        self.action = "Create"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        context['action'] = self.action
+        context['form'] = self.form_class(self.request.POST or None)
+        return context
+
+
+class AddModel(StaffUserMixin, CreateView):
+    template_name = "products/admin_manager/add_item.html"
+    form_class = CreateModelForm
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'model'})
+    type = ""
+    action = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "model"
+        self.action = "Create"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        context['action'] = self.action
+        context['form'] = self.form_class(self.request.POST or None)
+        return context
+
+
+class ModifyProduct(StaffUserMixin, UpdateView):
+    model = Product
+    form_class = UpdateProductForm
+    template_name = 'products/admin_manager/add_item.html'
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'product'})
+    type = ""
+    action = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "product"
+        self.action = "Update"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        context['action'] = self.action
+        return context
+
+    def get_queryset(self):
+        return Product.objects.filter(pk=self.kwargs['pk'])
+
+    def get_initial(self):
+        initial = super().get_initial()
+
+        instance = self.get_object()
+        if instance:
+            initial['model'] = instance.model
+            initial['category'] = instance.category
+        return initial
+
+
+class ModifyModel(StaffUserMixin, UpdateView):
+    model = CarModel
+    form_class = UpdateModelForm
+    template_name = 'products/admin_manager/add_item.html'
+    success_url = reverse_lazy('staff_list', kwargs={'type': 'model'})
+    type = ""
+    action = ""
+
+    def get_context_data(self, **kwargs):
+        self.type = "model"
+        self.action = "Update"
+        context = super().get_context_data(**kwargs)
+        context['type'] = self.type
+        context['action'] = self.action
+        return context
+
+    def get_queryset(self):
+        return CarModel.objects.filter(pk=self.kwargs['pk'])
+
+    def get_initial(self):
+        initial = super().get_initial()
+
+        instance = self.get_object()
+        if instance:
+            initial['maker'] = instance.maker
+        return initial
+
+
+class TableList(StaffUserMixin, ListView):
+    list_type = ""
+    paginate_by = 20
+    template_name = "products/admin_manager/table_list.html"
+
+    def get_queryset(self):
+        self.list_type = self.request.resolver_match.kwargs.get('type')
+
+        if self.list_type == 'country':
+            return Country.objects.all().order_by('-id')
+        elif self.list_type == 'maker':
+            return CarMaker.objects.all().order_by('-id')
+        elif self.list_type == 'model':
+            return CarModel.objects.all().order_by('-id')
+        elif self.list_type == 'product':
+            return Product.objects.all().order_by('-id')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         context['list_type'] = self.list_type
 
         return context

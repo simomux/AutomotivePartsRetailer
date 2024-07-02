@@ -7,12 +7,18 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = "Categories"
 
+    def __str__(self):
+        return self.name
+
 
 class Country(models.Model):
     name = models.CharField(max_length=100)
 
     class Meta:
         verbose_name_plural = "Countries"
+
+    def __str__(self):
+        return self.name
 
 
 class CarMaker(models.Model):
@@ -22,6 +28,9 @@ class CarMaker(models.Model):
     class Meta:
         verbose_name_plural = "Makers"
 
+    def __str__(self):
+        return self.name
+
 
 class CarModel(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
@@ -29,6 +38,9 @@ class CarModel(models.Model):
 
     class Meta:
         verbose_name_plural = "Models"
+
+    def __str__(self):
+        return self.name
 
 
 class Product(models.Model):
@@ -53,3 +65,6 @@ class Product(models.Model):
 
     class Meta:
         verbose_name_plural = "Products"
+
+    def __str__(self):
+        return self.name
