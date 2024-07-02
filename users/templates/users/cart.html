@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% block title %} {{ user.username }}'s cart {% endblock %}
+
+{% block head %}
+    <style>
+        #container {
+            padding: 15px;
+            display: flex;
+            justify-content: center; /* Center align the cart content */
+        }
+
+        #cart_content {
+            padding: 10px;
+            border: 2px solid darkslategray;
+            border-radius: 15px;
+            background: #d7d7d7;
+            text-align: center;
+            width: 600px; /* Adjust width as needed */
+        }
+
+        #title {
+            color: #161c3b;
+            font-weight: bold;
+        }
+
+        .item_in_cart {
+            font-size: large;
+            color: #161c3b;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .item {
+            padding-bottom: 30px;
+            text-align: center;
+        }
+
+        .item p {
+            margin: 5px 0;
+            padding-bottom: 10px;
+        }
+
+        .popup-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .popup-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        #checkout_container{
+            padding: 30px;
+        }
+        #checkout_button{
+            width: 150px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        <div id="popup-messages">
+            {% for message in messages %}
+                <div class="popup-message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div id="container">
+        <div id="cart_content">
+            <h2 id="title">Your cart:</h2>
+            {% for item in cart_items %}
+                <div class="item">
+                    <p class="item_in_cart">{{ item }}</p>
+                    <p>{{ item.product.price }} € X {{ item.quantity }} = {{ item.product.price|mul:item.quantity }} €</p>
+                    <a class="nav-button"  href="{% url 'remove_item' item.pk %}">Remove</a>
+                </div>
+            {% endfor %}
+            <h4 id="title">Total price: {{ total_price }} €</h4>
+            <div id="checkout_container">
+                <a class="nav-button" id="checkout_button" href="{% if cart_items.count > 0 %}{% url 'checkout' %}{% endif %}" >Checkout</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.popup-message');
+            messages.forEach(message => {
+                message.style.display = 'block';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 4000);
+            });
+        });
+    </script>
+{% endblock %}

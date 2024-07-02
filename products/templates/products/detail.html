@@ -44,10 +44,39 @@
             border: 2px solid #3e50ab;
             color: white;
         }
+        .popup-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .popup-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        #buy_button{
+            padding: 5px 10px;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
+    {% if messages %}
+        <div id="popup-messages">
+            {% for message in messages %}
+                <div class="popup-message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <div id="container">
         <div id="internal-container">
             <img id="image" src="{% static object.image %}" alt="Item image">
@@ -78,10 +107,11 @@
                 <p>Currently {{ object.stock }} in stock</p>
 
                 <div id="buy_item">
-                    <form method="post"> {% csrf_token %}
-                        <label>Amount:</label>
-                        <input class="" type="number" max="{{ object.stock }}" min="1" value="1">
-
+                    <form method="post" action="{% url 'add_item' product.id %}">
+                        {% csrf_token %}
+                        <label>Amount:
+                            <input type="number" name="quantity" max="{{ product.stock }}" min="1" value="1">
+                        </label>
                         {% if not user.is_authenticated or user.is_staff %}
                             <input type="submit" class="Primary" value="BUY" disabled>
                             {% if user.is_staff %}
@@ -89,10 +119,10 @@
                             {% else %}
                                 <h5 class="text-danger">You must log in before buying!</h5>
                             {% endif %}
-                       {% else %}
-                            <input type="submit" class="Primary" value="BUY">
-                       {% endif %}
-                </form>
+                        {% else %}
+                            <input type="submit" class="nav-button" id="buy_button" value="BUY">
+                        {% endif %}
+                    </form>
                 </div>
             </div>
         </div>
@@ -107,5 +137,15 @@
         function goBack() {
             window.history.back();
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.popup-message');
+            messages.forEach(message => {
+                message.style.display = 'block';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 10000); // Hide after 3 seconds
+            });
+        });
     </script>
 {% endblock %}

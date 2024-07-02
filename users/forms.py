@@ -1,7 +1,9 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 from django import forms
 
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from .models import *
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -25,3 +27,31 @@ class UserRegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class CheckoutForm(forms.ModelForm):
+    helper = FormHelper()
+    helper.form_show_errors = True
+    helper.form_id = 'create-order'
+    helper.form_method = "POST"
+    helper.add_input(Submit("submit", "Order", css_class="nav-button"))
+
+    country = forms.ModelChoiceField(
+        queryset=Country.objects.all(),
+        label='Country',
+        empty_label="Select a country",
+        to_field_name='name',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    payment_method = forms.ModelChoiceField(
+        queryset=Payment.objects.all(),
+        label='Payment Method',
+        empty_label="Select a category",
+        to_field_name='name',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Order
+        fields = ["city", "state", "country", "phone", "address", "payment_method"]

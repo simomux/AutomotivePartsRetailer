@@ -10,7 +10,7 @@
 {% block content %}
     <div class="container">
         <div id="title-container">
-            <h1 id="title">Welcome to our shop</h1>
+            <h1 id="title">Welcome to our shop {{ user.username }}</h1>
         </div>
         <a href="{% url 'product_list' %}?type=all" class="subtitle"><u>Browse complete list:</u></a>
         {% for item in products %}

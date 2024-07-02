@@ -41,18 +41,48 @@
         #infos{
             text-align: left;
         }
+        #small_title{
+            font-weight: bold;
+            color: #161c3b;
+        }
+        .popup-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .popup-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
+    {% if messages %}
+        <div id="popup-messages">
+            {% for message in messages %}
+                <div class="popup-message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <div id="container">
         <div id="profile_container">
             <h3 id="title">{{ user.username }} profile:</h3>
             <div id="infos">
-                <p>Username: {{ user.username }}</p>
-                <p>Email: {{ user.email }}</p>
+                <p><span id="small_title">Username:</span> {{ user.username }}</p>
+                <p><span id="small_title">Email:</span> {{ user.email }}</p>
                 {% if user.is_staff %}
-                    <p>Staff member</p>
+                    <span id="small_title">Staff member</span>
                 {% endif %}
             </div>
         </div>
@@ -75,4 +105,18 @@
         </div>
 
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.popup-message');
+            messages.forEach(message => {
+                message.style.display = 'block';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 4000);
+            });
+        });
+    </script>
 {% endblock %}

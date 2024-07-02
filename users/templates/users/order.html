@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+
+{% block title %} Create order {% endblock %}
+
+{% block head %}
+    <style>
+        #container {
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #form_container {
+            padding: 20px;
+            border: 2px solid darkslategray;
+            background: #d7d7d7;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+        }
+        label {
+            color: #3e50ab;
+            font-weight: bold;
+        }
+        #title{
+            color: #161c3b;
+            font-weight: bold;
+        }
+        .btn_container{
+            padding-top: 20px;
+        }
+        #recap_container{
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #order_recap{
+            padding: 20px;
+            border: 2px solid darkslategray;
+            background: #d7d7d7;
+            border-radius: 15px;
+            text-align: center;
+            width: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="recap_container">
+        <div id="order_recap">
+            <h2 id="title">Summary:</h2>
+        <h4 id="title">Total price: {{ sum_price }}</h4>
+        <h4 id="title">Total items: {{ num_items }}</h4>
+    </div>
+    </div>
+    <div id="container">
+        <div id="form_container">
+            <div id="title_container">
+                <h2 id="title">Order details:</h2>
+            </div>
+            <form method="post"> {% csrf_token %}
+                {% crispy form %}
+            </form>
+            <div class="btn_container">
+                <a href="{% url 'cart' %}" class="nav-button">Cancel</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

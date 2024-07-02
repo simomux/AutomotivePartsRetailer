@@ -1,12 +1,13 @@
 import os.path
 
-from products.models import Product, CarModel, CarMaker, Category, Country
+from products.models import *
+from users.models import *
+
 from csv import reader
 
 
 def erase_db():
     print('Erasing DB')
-    Category.objects.all().delete()
     Product.objects.all().delete()
     CarMaker.objects.all().delete()
     CarModel.objects.all().delete()
@@ -18,13 +19,28 @@ def init_db():
     if len(Category.objects.all()) != 0 and len(Country.objects.all()) != 0:
         return
 
-    # Categories of listed items
-    list_categories = ["Spare part", "Tool", "Accessory"]
+    if len(Category.objects.all()) == 0:
+        # Categories of listed items
+        list_categories = ["Spare part", "Tool", "Accessory"]
 
-    # Adding Categories to the DB
-    for i in list_categories:
-        cat = Category(name=i)
-        cat.save()
+        # Adding Categories to the DB
+        for i in list_categories:
+            cat = Category(name=i)
+            cat.save()
+
+    if len(Payment.objects.all()) == 0:
+        list_payments = ["Apple Pay", "PayPal", "Credit card/Debit card", "Wire transfer"]
+
+        for i in list_payments:
+            pay = Payment(name=i)
+            pay.save()
+
+    if len(Status.objects.all()) == 0:
+        list_order_status = ["Preparing", "Shipped", "Arrived"]
+
+        for i in list_order_status:
+            status = Status(name=i)
+            status.save()
 
     # Main countries of car manufacturers
     with open("static/data/countries.csv") as manufacturers:
