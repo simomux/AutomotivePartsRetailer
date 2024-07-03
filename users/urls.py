@@ -15,4 +15,8 @@ urlpatterns = [
 
     # Checkout view
     path('checkout/', checkout, name='checkout'),
+    path('orders/', OrderList.as_view(), name='orders'),
+    path('order/<int:pk>/', OrderDetail.as_view(), name='order_detail'),
+
+    path('order/next/<int:order_id>/', order_next, name='order_next'),
 ]

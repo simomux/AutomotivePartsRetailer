@@ -1,10 +1,11 @@
+from datetime import timedelta
 from functools import wraps
 
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed, HttpResponseBadRequest
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView, DetailView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import views as auth_views
 
@@ -38,6 +39,37 @@ class UserLoginView(AuthenticatedUserMixin, auth_views.LoginView):
         return reverse_lazy('profile')
 
 
+# Compute scores for recommendation system for registered user
+def compute_scores(user):
+    scores = dict()
+    user_items = CartItem.objects.filter(user=user).select_related('product__category', 'product__model__maker')
+
+    for user_item in user_items:
+        product = user_item.product
+        category = product.category
+        model = product.model
+        maker = model.maker if model else None
+
+        # If the user just added the item to the shopping cart multiply it's score by 1
+        multiplier = 1
+
+        # If the items is bought from the user multiply it's score by 1.5x
+        if user_item.order:
+            multiplier = 1.5
+
+        # Scaling of scores to give priority to model before maker before category
+        if category:
+            scores[category.name] = scores.get("Tool", 0) + (user_item.quantity * multiplier * 0.8)
+
+        if maker:
+            scores[maker.name] = scores.get(maker.name, 0) + (user_item.quantity * multiplier * 1)
+
+        if model:
+            scores[model.name] = scores.get(model.name, 0) + (user_item.quantity * multiplier * 1.2)
+
+    return scores
+
+
 class Profile(LoginRequiredMixin, DetailView):
     model = User
     template_name = 'users/profile.html'
@@ -45,6 +77,26 @@ class Profile(LoginRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        scores = compute_scores(self.request.user)
+
+        if scores:
+            max_score_key = max(scores, key=scores.get)
+
+            # Prioritize the filtering order
+            resulting_set = Product.objects.filter(category__name=max_score_key)
+            if not resulting_set.exists():
+                resulting_set = Product.objects.filter(model__name=max_score_key)
+            if not resulting_set.exists():
+                resulting_set = Product.objects.filter(model__maker__name=max_score_key)
+
+            # Randomize the items in the interested queryset and take 5 of them
+            context["interest_list"] = resulting_set.order_by('?')[:5]
+            context["interest"] = max_score_key
+
+        return context
 
 
 # A user already authenticated cannot register another user
@@ -67,7 +119,13 @@ def cartView(request):
             messages.warning(request, f'{cart_item.product} has reduced it\'s stock number.\nI will add to your cart '
                                       f'the new max number available of that product which is {current_product.stock}.')
 
-    total_price = sum(item.product.price * item.quantity for item in cart_items)
+    total_price = 0
+    for cart_item in cart_items:
+        if cart_item.product.is_discount:
+            total_price += cart_item.product.discount_price * cart_item.quantity
+        else:
+            total_price += cart_item.product.price * cart_item.quantity
+
     return render(request, template_name='users/cart.html',
                   context={'cart_items': cart_items, 'total_price': total_price})
 
@@ -132,7 +190,10 @@ def checkout(request):
     sum_price = 0
     num_items = 0
     for cart_item in cart_items:
-        sum_price += cart_item.product.price * cart_item.quantity
+        if cart_item.product.is_discount:
+            sum_price += cart_item.product.discount_price * cart_item.quantity
+        else:
+            sum_price += cart_item.product.price * cart_item.quantity
         num_items += cart_item.quantity
 
     if request.method == 'POST':
@@ -145,10 +206,13 @@ def checkout(request):
                 return redirect('cart')
 
         form = CheckoutForm(request.POST)
+
         if form.is_valid():
             # Create the order
             order = Order(
                 user=request.user,
+                name=form.cleaned_data['name'],
+                surname=form.cleaned_data['surname'],
                 city=form.cleaned_data['city'],
                 state=form.cleaned_data['state'],
                 country=get_object_or_404(Country, name=form.cleaned_data['country']),
@@ -156,6 +220,8 @@ def checkout(request):
                 address=form.cleaned_data['address'],
                 total_items=num_items,
                 total_price=sum_price,
+                estimated_time=1 + num_items if get_object_or_404(Country, name=form.cleaned_data[
+                    'country']).name == "Italy" else None,
                 status=get_object_or_404(Status, name='Preparing'),
                 payment=get_object_or_404(Payment, name=form.cleaned_data['payment_method']),
             )
@@ -170,7 +236,6 @@ def checkout(request):
                 cart_item.order = order
                 cart_item.save()
 
-            #return redirect('order_detail', order.id)
             messages.success(request, f'Your order was successful.')
             return redirect('profile')
 
@@ -178,3 +243,52 @@ def checkout(request):
         form = CheckoutForm()
 
     return render(request, 'users/order.html', {'form': form, 'sum_price': sum_price, 'num_items': num_items})
+
+
+class OrderList(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = "users/order_list.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return Order.objects.filter(user=self.request.user).order_by('-id')
+        return Order.objects.all().order_by('-id')
+
+
+class OrderDetail(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = "users/order_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_order = get_object_or_404(Order, pk=self.kwargs['pk'])
+        estimated = None
+        if current_order.estimated_time:
+            estimated = current_order.date_added + timedelta(days=current_order.estimated_time)
+
+        items_set = CartItem.objects.filter(order=current_order)
+
+        context['items_set'] = items_set
+        context['estimated'] = estimated
+
+        return context
+
+
+def order_next(request, order_id):
+    if request.user.is_staff:
+        order = get_object_or_404(Order, pk=order_id)
+        current_status = order.status.name
+        # Possible statuses: ["Preparing", "Shipped", "Arrived"]
+
+        if current_status == "Preparing":
+            new_status = Status.objects.get(name="Shipped")
+            order.status = new_status
+            order.save()
+        elif current_status == "Shipped":
+            new_status = Status.objects.get(name="Arrived")
+            order.status = new_status
+            order.save()
+
+        return redirect('orders')
+    return HttpResponseBadRequest("Invalid request method")

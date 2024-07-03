@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Details of order {{ object.pk }} {% endblock %}
+
+{% block head %}
+    <style>
+        #container{
+            padding: 15px;
+        }
+        #internal-container{
+            background-color: #d7d7d7;
+            padding: 10px;
+            border: 2px solid darkslategray;
+            border-radius: 15px;
+        }
+        #content{
+            padding-left: 10px;
+        }
+        #go_back_container{
+            display: flex;
+            justify-content: center;
+            padding-top: 15px;
+        }
+        #go_back{
+            background-color: #3e50ab;
+            color: white;
+            padding: 10px 15px;
+            cursor: pointer;
+            border: 2px solid #6f81de;
+            border-radius: 15px;
+        }
+        #go_back:hover{
+            background-color: #6f81de;
+            border: 2px solid #3e50ab;
+            color: white;
+        }
+        h5{
+            color: #161c3b;
+            font-weight: bold;
+            font-size: large;
+            padding: 5px 0;
+        }
+        #title_container{
+            text-align: center;
+        }
+        #title{
+            color: #161c3b;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="container">
+        <div id="internal-container">
+            <div id="content">
+            <div id="title_container">
+                <h2 id="title">Summary:</h2>
+            </div>
+                <h5><b>Order number: {{ object.pk }}</b></h5>
+                <h5>Orderer: {{ object.user }}</h5>
+                <h5>Shipping details:</h5>
+                <ul>
+                    <li>Full name: {{ object.name }} {{ object.surname }}</li>
+                    <li>Address: {{ object.address }}, {{ object.city }}, {{ object.state }}, {{ object.country }}</li>
+                    <li>Phone number: {{ object.phone }}</li>
+                    <li>Number of items: {{ object.total_items }}</li>
+                    <li>Total price: {{ object.total_price }} €</li>
+                </ul>
+
+
+                <h5>Estimated delivery: {% if estimated %}{{ estimated|date:"D d M Y" }} {% else %} Impossible to estimate since your country is not Italy {% endif %}</h5>
+                <h5>Status: {{ object.status }}</h5>
+                <h5>Payment method: {{ object.payment }}</h5>
+                </br>
+                <h5>Order summary:</h5>
+                <ul>
+                {% for item in items_set %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="go_back_container">
+        <button onclick="goBack()" id="go_back">Go Back</button>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+{% endblock %}

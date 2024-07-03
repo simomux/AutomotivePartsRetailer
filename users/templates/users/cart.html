@@ -65,6 +65,13 @@
         #checkout_button{
             width: 150px;
         }
+        .product_link{
+            font-weight: bold;
+            color: #3e50ab;
+        }
+        .product_link:hover{
+            color: #6f81de;
+        }
     </style>
 {% endblock %}
 
@@ -83,8 +90,8 @@
             <h2 id="title">Your cart:</h2>
             {% for item in cart_items %}
                 <div class="item">
-                    <p class="item_in_cart">{{ item }}</p>
-                    <p>{{ item.product.price }} € X {{ item.quantity }} = {{ item.product.price|mul:item.quantity }} €</p>
+                    <p class="item_in_cart">{{ item.quantity }} X <a class="product_link" href="{% url 'detail' item.product.pk %}"><u>{{ item.product.name }}</u></a></p>
+                    <p>{% if item.product.is_discount %} {{ item.product.discount_price }} € X {{ item.quantity }} = {{ item.product.discount_price|mul:item.quantity }} € {% else %} {{ item.product.price }} € X {{ item.quantity }} = {{ item.product.price|mul:item.quantity }} €{% endif %}</p>
                     <a class="nav-button"  href="{% url 'remove_item' item.pk %}">Remove</a>
                 </div>
             {% endfor %}

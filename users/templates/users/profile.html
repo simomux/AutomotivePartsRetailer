@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %} Profile {% endblock %}
 
 {% block head %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <style>
-        #container{
+        .container{
             text-align: center;
             padding: 15px;
         }
@@ -62,6 +64,9 @@
             color: #155724;
             border-color: #c3e6cb;
         }
+        .recommend_container{
+            text-align: left;
+        }
     </style>
 {% endblock %}
 
@@ -75,7 +80,7 @@
             {% endfor %}
         </div>
     {% endif %}
-    <div id="container">
+    <div class="container">
         <div id="profile_container">
             <h3 id="title">{{ user.username }} profile:</h3>
             <div id="infos">
@@ -87,6 +92,33 @@
             </div>
         </div>
 
+        {% if interest_list.count > 0 %}
+            <div class="container">
+                </br>
+                <h2 id="title">It seems that you are interested in {{ interest }}:</h2>
+                <div class="recommend_container">
+                    {% for item in interest_list %}
+                        <div class="surround-card">
+                            <div class="card-body">
+                                <img class="card-img" src="{% static item.image %}" onerror="this.onerror=null; this.src='{% static 'imgs/placeholder.jpg' %}'" alt="ERROR">
+                                <div class="card-text">
+                                    <a class="card-title" href="{% url 'detail' item.pk %}">{{ item.name }}</a>
+                                    <p>{{ item.description }}</p>
+                                    {% if item.is_discount %}
+                                        <h4><s>Old price: {{ item.price }}€</s></h4>
+                                        <h4 class="text-danger">Discounted price: {{ item.discount_price }} €</h4>
+                                    {% else %}
+                                        <h4>Price: {{ item.price }} €</h4>
+                                    {% endif %}
+                                    <p>Currently {{ item.stock }} in stock</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
         <div id="profile_actions">
             <h3 id="title">Options:</h3>
             <div id="action_buttons">
@@ -96,10 +128,8 @@
                         <a href="{% url 'staff_list' 'maker' %}" class="action">Maker management</a>
                         <a href="{% url 'staff_list' 'model' %}" class="action">Model management</a>
                         <a href="{% url 'staff_list' 'product' %}" class="action">Product management</a>
-                        <a href="" class="action">Current orders</a>
-                    {% else %}
-                        <a href="" class="action">View orders</a>
                     {% endif %}
+                    <a href="{% url 'orders' %}" class="action">View orders</a>
                 {% endif %}
             </div>
         </div>

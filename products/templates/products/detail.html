@@ -106,24 +106,28 @@
 
                 <p>Currently {{ object.stock }} in stock</p>
 
-                <div id="buy_item">
-                    <form method="post" action="{% url 'add_item' product.id %}">
-                        {% csrf_token %}
-                        <label>Amount:
-                            <input type="number" name="quantity" max="{{ product.stock }}" min="1" value="1">
-                        </label>
-                        {% if not user.is_authenticated or user.is_staff %}
-                            <input type="submit" class="Primary" value="BUY" disabled>
-                            {% if user.is_staff %}
-                                <h5 class="text-danger">Staff members can't buy items!</h5>
+                {% if object.stock > 0 %}
+                    <div id="buy_item">
+                        <form method="post" action="{% url 'add_item' product.id %}">
+                            {% csrf_token %}
+                            <label>Amount:
+                                <input type="number" name="quantity" max="{{ product.stock }}" min="1" value="1">
+                            </label>
+                            {% if not user.is_authenticated or user.is_staff %}
+                                <input type="submit" class="Primary" value="BUY" disabled>
+                                {% if user.is_staff %}
+                                    <h5 class="text-danger">Staff members can't buy items!</h5>
+                                {% else %}
+                                    <h5 class="text-danger">You must log in before buying!</h5>
+                                {% endif %}
                             {% else %}
-                                <h5 class="text-danger">You must log in before buying!</h5>
+                                <input type="submit" class="nav-button" id="buy_button" value="BUY">
                             {% endif %}
-                        {% else %}
-                            <input type="submit" class="nav-button" id="buy_button" value="BUY">
-                        {% endif %}
-                    </form>
-                </div>
+                        </form>
+                    </div>
+                {% else %}
+                    <p>It will be back soon!</p>
+                {% endif %}
             </div>
         </div>
     </div>

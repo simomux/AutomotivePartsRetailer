@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Order list {% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <style>
+        #title {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .page-button {
+            font-size: large;
+            font-weight: bold;
+            color: #161c3b;
+            margin: 0 5px;
+        }
+        .page-button:hover {
+            color: #d7d7d7;
+        }
+
+        .current {
+            font-size: large;
+            color: white;
+            margin: 0 10px;
+        }
+
+        .links {
+            display: inline-flex;
+            align-items: center;
+            border: 3px solid #3e50ab;
+            border-radius: 10px;
+            background: #6f81de;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        #status_button{
+            padding-top: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div id="title-container">
+
+            <h2 id="title">List of
+                {% if not user.is_staff %}
+                    your
+                {% endif %}
+                orders
+            :</h2>
+        </div>
+        {% for item in page_obj %}
+            <div class="surround-card">
+                <div class="card-body">
+                    <div class="card-text">
+                        <a class="card-title" href="{% url 'order_detail' item.pk %}">Order N° {{ item.pk }} of {{ item.date_added|date:"D d M Y" }} {% if user.is_staff %} from {{ item.user }}{% endif %}</a>
+                        <h5>Status: {{ item.status }}</h5>
+                        {% if user.is_staff %}
+                            <div id="status_button">
+                                <a class="nav-button" href="{% url 'order_next' item.pk %}">Modify status</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="pagination">
+            <div class="links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="page-button">&#8678; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="page-button">prev</a>
+                {% endif %}
+                <p class="current">Page {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</p>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="page-button">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="page-button">last &#8680;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
