@@ -312,6 +312,7 @@ class ModifyModel(StaffUserMixin, UpdateView):
         return initial
 
 
+# ListView of table elements for CRUD operations
 class TableList(StaffUserMixin, ListView):
     list_type = ""
     paginate_by = 20

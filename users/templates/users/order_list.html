@@ -67,9 +67,11 @@
                         <a class="card-title" href="{% url 'order_detail' item.pk %}">Order N° {{ item.pk }} of {{ item.date_added|date:"D d M Y" }} {% if user.is_staff %} from {{ item.user }}{% endif %}</a>
                         <h5>Status: {{ item.status }}</h5>
                         {% if user.is_staff %}
-                            <div id="status_button">
-                                <a class="nav-button" href="{% url 'order_next' item.pk %}">Modify status</a>
-                            </div>
+                            {% if item.status.name != "Arrived" %}
+                                <div id="status_button">
+                                    <a class="nav-button" href="{% url 'order_next' item.pk %}">Update status</a>
+                                </div>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

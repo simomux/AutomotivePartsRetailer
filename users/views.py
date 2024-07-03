@@ -19,11 +19,11 @@ from .models import *
 class AuthenticatedUserMixin:
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            # return redirect("home")
             return HttpResponseNotAllowed(['GET', 'POST'])
         return super().dispatch(request, *args, **kwargs)
 
 
+# Decorator for FBV that checks if the user is not a staff member
 def not_staff_user_required(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
@@ -93,7 +93,7 @@ class Profile(LoginRequiredMixin, DetailView):
                 resulting_set = Product.objects.filter(model__maker__name=max_score_key)
 
             # Randomize the items in the interested queryset and take 5 of them
-            context["interest_list"] = resulting_set.order_by('?')[:5]
+            context["interest_list"] = resulting_set.order_by('?')[:4]
             context["interest"] = max_score_key
 
         return context
@@ -259,6 +259,17 @@ class OrderList(LoginRequiredMixin, ListView):
 class OrderDetail(LoginRequiredMixin, DetailView):
     model = Order
     template_name = "users/order_detail.html"
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+
+        if obj.user != self.request.user:
+            return HttpResponseBadRequest("You do not have permission to view this order.")
+
+        return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

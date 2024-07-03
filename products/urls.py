@@ -14,7 +14,6 @@ urlpatterns = [
 
     path('staff/list/<str:type>', views.TableList.as_view(), name='staff_list'),
 
-
     path('staff/remove/country/<int:pk>/', views.RemoveCountry.as_view(), name='remove_country'),
     path('staff/maker/remove/<int:pk>/', views.RemoveMaker.as_view(), name='remove_maker'),
     path('staff/product/remove/<int:pk>/', views.RemoveProduct.as_view(), name='remove_product'),
