@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'mathfilters',
     'products',
     'users',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
