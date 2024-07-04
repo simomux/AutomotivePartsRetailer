@@ -34,4 +34,4 @@ python3 -m manage runserver 8080
 
 Some fictional accounts have been created for testing purposes, you can look up the credentials in [initcmds.py](https://github.com/simomux/AutomotivePartsRetailer/blob/a92222bb13e06f7b919761a11cd7b98ad2d5ec61/AutomotivePartsRetailer/initcmds.py)
 
-If you want to clean and repopulate the DB, just uncomment `erase_db()` in [urls.py](https://github.com/simomux/AutomotivePartsRetailer/blob/a92222bb13e06f7b919761a11cd7b98ad2d5ec61/AutomotivePartsRetailer/urls.py) and rerun the project.
+Make sure that you comment again `init_db()` after you used it the first time, otherwise it will cause issues when running tests.

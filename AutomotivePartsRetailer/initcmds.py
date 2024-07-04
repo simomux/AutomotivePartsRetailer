@@ -9,7 +9,6 @@ from csv import reader
 
 def erase_db():
     print('Erasing DB')
-    User.objects.all().delete()
     Product.objects.all().delete()
     CarMaker.objects.all().delete()
     CarModel.objects.all().delete()
@@ -83,8 +82,8 @@ def init_db():
                 car_model = CarModel(name=row[0], maker=maker)
                 car_model.save()
 
+    # Adding manually some products to the DB. Maker for test: Audi, Toyota, Ferrari, Nissan, Honda, Chevrolet, Ford, Land Rover
     if len(Product.objects.all()) == 0:
-        # Adding manually some products to the DB -- still in testing
         with open("static/data/products.csv") as products:
             csv_reader = reader(products, delimiter=',')
             for i in csv_reader:

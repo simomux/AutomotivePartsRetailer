@@ -90,7 +90,7 @@ class SearchResultsView(ListView):
             queryset = queryset.exclude(category=Category.objects.get(name="Tool"))
             queryset = queryset.filter(model=None)
 
-        return queryset
+        return queryset.order_by('-id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -116,7 +116,7 @@ class ProductListView(ListView):
             return Product.objects.exclude(amount_bought=0).order_by('-amount_bought')
         else:
             self.page_title = 'List of all products'
-            return Product.objects.all()
+            return Product.objects.all().order_by('-id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
