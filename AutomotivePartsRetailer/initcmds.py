@@ -2,12 +2,14 @@ import os.path
 
 from products.models import *
 from users.models import *
+from django.contrib.auth.models import User
 
 from csv import reader
 
 
 def erase_db():
     print('Erasing DB')
+    User.objects.all().delete()
     Product.objects.all().delete()
     CarMaker.objects.all().delete()
     CarModel.objects.all().delete()
@@ -16,6 +18,21 @@ def erase_db():
 
 def init_db():
     print('Initializing DB')
+
+    if len(User.objects.all()) == 0:
+        # Creation of users
+        # These are the credentials you need to log in testing accounts
+        admin = User.objects.create_superuser(username='simone', email='foo@foo.com', password='simone')
+        admin.save()
+        staff = User.objects.create_user(username='staffMember', email='staff@staff.com', password='staffMember', is_staff=True)
+        staff.save()
+        for i in range(5):
+            client = User.objects.create_user(username=f"client{i}", email='client@client.com', password=f"client{i}")
+            client.save()
+
+        User.objects.create_user(username='client2', email='client@client.com', password='client2')
+        User.objects.create_user(username='client3', email='client@client.com', password='client3')
+        User.objects.create_user(username='client4', email='client@client.com', password='client4')
 
     if len(Category.objects.all()) == 0:
         # Categories of listed items
@@ -76,7 +93,7 @@ def init_db():
                 price = i[2].strip()
                 stock = i[3].strip()
                 category = Category.objects.get(name=i[4].strip())
-                image = os.path.join("imgs/", i[0].replace(" ", "_")+".webp")
+                image = os.path.join("imgs/", i[0].replace(" ", "_") + ".webp")
 
                 if category != "Tool":
                     try:
@@ -86,8 +103,10 @@ def init_db():
 
                 if i[-2].strip() == "True":
                     discount_price = i[-1].strip()
-                    product = Product(name=name, description=description, price=price, stock=stock, category=category, model=model, image=image, is_discount=True, discount_price=discount_price)
+                    product = Product(name=name, description=description, price=price, stock=stock, category=category,
+                                      model=model, image=image, is_discount=True, discount_price=discount_price)
                 else:
-                    product = Product(name=name, description=description, price=price, stock=stock, category=category, model=model, image=image)
+                    product = Product(name=name, description=description, price=price, stock=stock, category=category,
+                                      model=model, image=image)
 
                 product.save()

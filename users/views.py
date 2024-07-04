@@ -50,22 +50,19 @@ def compute_scores(user):
         model = product.model
         maker = model.maker if model else None
 
-        # If the user just added the item to the shopping cart multiply it's score by 1
-        multiplier = 1
-
         # If the items is bought from the user multiply it's score by 1.5x
-        if user_item.order:
-            multiplier = 1.5
+        # If the user just added the item to the shopping cart multiply it's score by 1
+        multiplier = 1.5 if user_item.order else 1
 
         # Scaling of scores to give priority to model before maker before category
         if category:
-            scores[category.name] = scores.get("Tool", 0) + (user_item.quantity * multiplier * 0.8)
+            scores[category.name] = round(scores.get(category.name, 0) + (user_item.quantity * multiplier * 0.8), 1)
 
         if maker:
-            scores[maker.name] = scores.get(maker.name, 0) + (user_item.quantity * multiplier * 1)
+            scores[maker.name] = round(scores.get(maker.name, 0) + (user_item.quantity * multiplier * 1), 1)
 
         if model:
-            scores[model.name] = scores.get(model.name, 0) + (user_item.quantity * multiplier * 1.2)
+            scores[model.name] = round(scores.get(model.name, 0) + (user_item.quantity * multiplier * 1.2), 1)
 
     return scores
 
@@ -80,21 +77,22 @@ class Profile(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        scores = compute_scores(self.request.user)
+        if not self.request.user.is_staff:
+            scores = compute_scores(self.request.user)
 
-        if scores:
-            max_score_key = max(scores, key=scores.get)
+            if scores:
+                max_score_key = max(scores, key=scores.get)
 
-            # Prioritize the filtering order
-            resulting_set = Product.objects.filter(category__name=max_score_key)
-            if not resulting_set.exists():
-                resulting_set = Product.objects.filter(model__name=max_score_key)
-            if not resulting_set.exists():
-                resulting_set = Product.objects.filter(model__maker__name=max_score_key)
+                # Prioritize the filtering order
+                resulting_set = Product.objects.filter(category__name=max_score_key)
+                if not resulting_set.exists():
+                    resulting_set = Product.objects.filter(model__name=max_score_key)
+                if not resulting_set.exists():
+                    resulting_set = Product.objects.filter(model__maker__name=max_score_key)
 
-            # Randomize the items in the interested queryset and take 5 of them
-            context["interest_list"] = resulting_set.order_by('?')[:4]
-            context["interest"] = max_score_key
+                # Randomize the items in the interested queryset and take 5 of them
+                context["interest_list"] = resulting_set.order_by('?')[:4]
+                context["interest"] = max_score_key
 
         return context
 
@@ -273,7 +271,8 @@ class OrderDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        current_order = get_object_or_404(Order, pk=self.kwargs['pk'])
+        current_order = self.get_object()
+
         estimated = None
         if current_order.estimated_time:
             estimated = current_order.date_added + timedelta(days=current_order.estimated_time)
