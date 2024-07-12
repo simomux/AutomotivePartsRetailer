@@ -27,7 +27,7 @@ class AuthenticatedUserMixin:
 def not_staff_user_required(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_staff:
+        if request.user.is_staff or not request.user.is_authenticated:
             return HttpResponseNotAllowed(['GET', 'POST'])
         return view_func(request, *args, **kwargs)
 
@@ -259,12 +259,14 @@ class OrderDetail(LoginRequiredMixin, DetailView):
     template_name = "users/order_detail.html"
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        if not self.request.user.is_staff:
+            return Order.objects.filter(user=self.request.user)
+        return Order.objects.all()
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset=queryset)
 
-        if obj.user != self.request.user:
+        if (obj.user != self.request.user) and not self.request.user.is_staff:
             return HttpResponseBadRequest("You do not have permission to view this order.")
 
         return obj
